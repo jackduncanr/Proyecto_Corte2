@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Help Desk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+    <h1 class="text-center mb-4">💻 Help Desk - Gestión de Tickets</h1>
+
+    <!-- Crear ticket -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Crear Ticket</h5>
+            <form id="formTicket">
+                <input class="form-control mb-2" id="titulo" placeholder="Título" required>
+                <textarea class="form-control mb-2" id="descripcion" placeholder="Descripción" required></textarea>
+                <button class="btn btn-primary">Crear</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Lista -->
+    <div class="card">
+        <div class="card-body">
+            <h5>Lista de Tickets</h5>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Título</th>
+                        <th>Estado</th>
+                        <th>Técnico</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaTickets"></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+const API = "/tickets/";
+
+// 🔄 Cargar tickets
+async function cargarTickets() {
+    const res = await fetch(API);
+    const data = await res.json();
+
+    const tabla = document.getElementById("tablaTickets");
+    tabla.innerHTML = "";
+
+    data.forEach(t => {
+        tabla.innerHTML += `
+        <tr>
+            <td>${t.id}</td>
+            <td>${t.titulo}</td>
+            <td>
+                <select onchange="cambiarEstado(${t.id}, this.value)" class="form-select">
+                    <option ${t.estado === 'abierto' ? 'selected' : ''}>abierto</option>
+                    <option ${t.estado === 'en progreso' ? 'selected' : ''}>en progreso</option>
+                    <option ${t.estado === 'cerrado' ? 'selected' : ''}>cerrado</option>
+                </select>
+            </td>
+            <td>
+                <input value="${t.tecnico || ''}" 
+                       onchange="cambiarTecnico(${t.id}, this.value)" 
+                       class="form-control"/>
+            </td>
+            <td>
+                <button class="btn btn-danger btn-sm" onclick="eliminar(${t.id})">Eliminar</button>
+            </td>
+        </tr>
+        `;
+    });
+}
+
+// ➕ Crear ticket
+document.getElementById("formTicket").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    await fetch(API, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({
+            titulo: document.getElementById("titulo").value,
+            descripcion: document.getElementById("descripcion").value
+        })
+    });
+
+    e.target.reset();
+    cargarTickets();
+});
+
+// ✏️ Cambiar estado
+async function cambiarEstado(id, estado) {
+    await fetch(API + id, {
+        method: "PATCH",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({estado})
+    });
+}
+
+// 👨‍💻 Cambiar técnico
+async function cambiarTecnico(id, tecnico) {
+    await fetch(API + id, {
+        method: "PATCH",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({tecnico})
+    });
+}
+
+// ❌ Eliminar
+async function eliminar(id) {
+    if (!confirm("¿Eliminar ticket?")) return;
+
+    await fetch(API + id, { method: "DELETE" });
+    cargarTickets();
+}
+
+// 🚀 Inicial
+cargarTickets();
+</script>
+
+</body>
+</html>
+
+
