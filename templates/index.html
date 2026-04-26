@@ -10,7 +10,7 @@
 <div class="container mt-4">
     <h1 class="text-center mb-4">💻 Help Desk - Gestión de Tickets</h1>
 
-    <!-- Crear ticket -->
+
     <div class="card mb-4">
         <div class="card-body">
             <h5>Crear Ticket</h5>
@@ -21,8 +21,8 @@
             </form>
         </div>
     </div>
-    
-    <!-- Lista -->
+
+  
     <div class="card">
         <div class="card-body">
             <h5>Lista de Tickets</h5>
@@ -45,7 +45,7 @@
 <script>
 const API = "/tickets/";
 
-// 🔄 Cargar tickets
+// Cargar tickets
 async function cargarTickets() {
     const res = await fetch(API);
     const data = await res.json();
@@ -78,7 +78,7 @@ async function cargarTickets() {
     });
 }
 
-// ➕ Crear ticket
+// Crear ticket
 document.getElementById("formTicket").addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -95,7 +95,7 @@ document.getElementById("formTicket").addEventListener("submit", async (e) => {
     cargarTickets();
 });
 
-// ✏️ Cambiar estado
+// Cambiar estado
 async function cambiarEstado(id, estado) {
     await fetch(API + id, {
         method: "PATCH",
@@ -104,7 +104,7 @@ async function cambiarEstado(id, estado) {
     });
 }
 
-// 👨‍💻 Cambiar técnico
+// Cambiar técnico
 async function cambiarTecnico(id, tecnico) {
     await fetch(API + id, {
         method: "PATCH",
@@ -113,7 +113,7 @@ async function cambiarTecnico(id, tecnico) {
     });
 }
 
-// ❌ Eliminar
+//  Eliminar
 async function eliminar(id) {
     if (!confirm("¿Eliminar ticket?")) return;
 
@@ -121,7 +121,7 @@ async function eliminar(id) {
     cargarTickets();
 }
 
-// 🚀 Inicial
+//  Inicial
 cargarTickets();
 </script>
 
